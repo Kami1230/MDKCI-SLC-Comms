@@ -4,13 +4,37 @@
   <h2>Send Notification</h2>
   <input type="text" id="message">
   <button onclick="sendMessage()">Send</button>
+  <div id="status"></div>
 
   <script>
     const socket = new WebSocket('wss://secure-brook-93316-938a41b3b17a.herokuapp.com');
+    const statusDiv = document.getElementById('status');
+
+    socket.onopen = () => {
+      statusDiv.textContent = 'Connected to server';
+    };
+
+    socket.onclose = () => {
+      statusDiv.textContent = 'Disconnected from server';
+    };
+
+    socket.onerror = (error) => {
+      statusDiv.textContent = `WebSocket Error: ${error.message}`;
+    };
+
+    socket.onmessage = (event) => {
+      console.log('Received:', event.data);
+      statusDiv.textContent = `Received: ${event.data}`;
+    };
 
     function sendMessage() {
       const message = document.getElementById('message').value;
-      socket.send(JSON.stringify({ type: 'notification', content: message }));
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        console.log('Sent:', message);
+      } else {
+        statusDiv.textContent = 'Connection not open';
+      }
     }
   </script>
 </body>

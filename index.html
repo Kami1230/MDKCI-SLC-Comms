@@ -6,7 +6,7 @@
   <button onclick="sendMessage()">Send</button>
 
   <script>
-    const socket = new WebSocket('ws://localhost:8080');
+    const socket = new WebSocket('wss://secure-brook-93316-938a41b3b17a.herokuapp.com');
 
     function sendMessage() {
       const message = document.getElementById('message').value;

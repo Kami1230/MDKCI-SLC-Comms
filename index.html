@@ -11,6 +11,7 @@
     const statusDiv = document.getElementById('status');
 
     socket.onopen = () => {
+      socket.sent('ping');
       statusDiv.textContent = 'Connected to server';
     };
 
@@ -26,7 +27,11 @@
       console.log('Received:', event.data);
       statusDiv.textContent = `Received: ${event.data}`;
     };
-
+    setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send('ping');
+      }
+    }, 30000);
     function sendMessage() {
       const message = document.getElementById('message').value;
       if (socket.readyState === WebSocket.OPEN) {

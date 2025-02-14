@@ -11,7 +11,7 @@
     const statusDiv = document.getElementById('status');
 
     socket.onopen = () => {
-      socket.sent('ping');
+      socket.sent('');
       statusDiv.textContent = 'Connected to server';
     };
 

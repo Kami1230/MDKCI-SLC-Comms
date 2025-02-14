@@ -5,13 +5,15 @@
   <input type="text" id="message">
   <button onclick="sendMessage()">Send</button>
   <div id="status"></div>
+  <div id="messageHistory"></div>
 
   <script>
     const socket = new WebSocket('wss://secure-brook-93316-938a41b3b17a.herokuapp.com');
     const statusDiv = document.getElementById('status');
+    const messageHistoryDiv = document.getElementById('messageHistory');
 
     socket.onopen = () => {
-      socket.sent('');
+      socket.send('ping');
       statusDiv.textContent = 'Connected to server';
     };
 
@@ -25,21 +27,44 @@
 
     socket.onmessage = (event) => {
       console.log('Received:', event.data);
-      statusDiv.textContent = `Received: ${event.data}`;
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'history') {
+          displayMessageHistory(data.messages);
+        } else {
+          displayMessage(data.content);
+        }
+      } catch (e) {
+        statusDiv.textContent = `Received: ${event.data}`;
+      }
     };
+
     setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
-        socket.send('');
+        socket.send('ping');
       }
     }, 30000);
+
     function sendMessage() {
       const message = document.getElementById('message').value;
       if (socket.readyState === WebSocket.OPEN) {
-        socket.send(message);
+        socket.send(JSON.stringify({ type: 'message', content: message }));
         console.log('Sent:', message);
+        document.getElementById('message').value = '';
       } else {
         statusDiv.textContent = 'Connection not open';
       }
+    }
+
+    function displayMessageHistory(messages) {
+      messageHistoryDiv.innerHTML = '';
+      messages.forEach(displayMessage);
+    }
+
+    function displayMessage(message) {
+      const messageElement = document.createElement('p');
+      messageElement.textContent = message;
+      messageHistoryDiv.insertBefore(messageElement, messageHistoryDiv.firstChild);
     }
   </script>
 </body>

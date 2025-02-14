@@ -29,7 +29,7 @@
     };
     setInterval(() => {
       if (socket.readyState === WebSocket.OPEN) {
-        socket.send('ping');
+        socket.send('');
       }
     }, 30000);
     function sendMessage() {

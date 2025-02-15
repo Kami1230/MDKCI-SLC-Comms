@@ -4,6 +4,7 @@
   <h2>Send Notification</h2>
   <input type="text" id="message">
   <button onclick="sendMessage()">Send</button>
+  <button onclick="clearMessages()">Clear All Messages</button>
   <div id="status"></div>
   <div id="messageHistory"></div>
 
@@ -31,8 +32,11 @@
         const data = JSON.parse(event.data);
         if (data.type === 'history') {
           displayMessageHistory(data.messages);
-        } else {
+        } else if (data.type === 'message') {
           displayMessage(data.content);
+        } else if (data.type === 'clear') {
+          messageHistoryDiv.innerHTML = '';
+          statusDiv.textContent = 'All messages cleared';
         }
       } catch (e) {
         statusDiv.textContent = `Received: ${event.data}`;
@@ -51,6 +55,15 @@
         socket.send(JSON.stringify({ type: 'message', content: message }));
         console.log('Sent:', message);
         document.getElementById('message').value = '';
+      } else {
+        statusDiv.textContent = 'Connection not open';
+      }
+    }
+
+    function clearMessages() {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'clear' }));
+        console.log('Clearing all messages');
       } else {
         statusDiv.textContent = 'Connection not open';
       }

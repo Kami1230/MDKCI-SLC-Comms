@@ -17,15 +17,12 @@
       socket.send('ping');
       statusDiv.textContent = 'Connected to server';
     };
-
     socket.onclose = () => {
       statusDiv.textContent = 'Disconnected from server';
     };
-
     socket.onerror = (error) => {
       statusDiv.textContent = `WebSocket Error: ${error.message}`;
     };
-
     socket.onmessage = (event) => {
       console.log('Received:', event.data);
       try {

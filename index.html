@@ -4,7 +4,6 @@
   <h2>Send Notification</h2>
   <input type="text" id="message">
   <button onclick="sendMessage()">Send</button>
-  <button onclick="clearDirectory()">Clear All Messages</button>
   <div id="status"></div>
   <div id="messageHistory"></div>
 
@@ -32,9 +31,6 @@
         const data = JSON.parse(event.data);
         if (data.type === 'history') {
           displayMessageHistory(data.messages);
-        } else if (data.type === 'directory_cleared') {
-          statusDiv.textContent = 'All messages cleared';
-          messageHistoryDiv.innerHTML = '';
         } else {
           displayMessage(data.content);
         }
@@ -55,14 +51,6 @@
         socket.send(JSON.stringify({ type: 'message', content: message }));
         console.log('Sent:', message);
         document.getElementById('message').value = '';
-      } else {
-        statusDiv.textContent = 'Connection not open';
-      }
-    }
-
-    function clearDirectory() {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send('clear_directory');
       } else {
         statusDiv.textContent = 'Connection not open';
       }
